@@ -1,0 +1,81 @@
+@startuml
+title My resume site - To Be - Context Diagram
+
+top to bottom direction
+
+!include ./libs/c4/C4_Component.puml
+
+
+Person(employer, "Employer", "Authorized user")
+Person_Ext(guest, "Guest", "Not authorized user")
+Person(admin, "Me", "System Administrator")
+
+Container_Boundary(frontHosts, "host for frontends") {
+    System(generalFront, "Entry Point", "Entry point for Frontend")
+    System(reactFront, "React Front", "React version of Site")
+    System(vueFront, "Vue Front", "Vue version of front")
+
+    generalFront --> reactFront : upload if checked
+    generalFront --> vueFront : upload if checked
+}
+employer --> generalFront : work with site
+guest --> generalFront : work with site
+admin --> generalFront : work with site
+
+
+Container_Boundary(infraArea, "My Infrastructure") {
+    System(apiGate, "API Gateways", "API Gate")
+
+    System(resumeApi, "Resume Editor Service", "Editing and filling the resume with blocks and information")
+    System(auth, "Users and Profiles", "Регистрация пользователей и аутентификация")
+    System(aiChatBot, "AI Chat bot", "Chatting with virtual me")
+
+    apiGate --> resumeApi : [proxy-REST]
+    apiGate --> auth : [proxy-REST]
+    apiGate --> aiChatBot : [proxy-REST]
+
+}
+
+reactFront --> apiGate : [REST]
+vueFront --> apiGate : [REST]
+
+employer --> auth : [auth,jwt]
+admin --> auth : [auth,jwt]
+
+
+
+
+' System(workflows, "Workflows", "Конфигурация пользовательских сценариев")
+
+System_Ext(claimsProviders, "User claims providers", "Social networks, federal identity services")
+auth --> claimsProviders : [saml]
+
+
+System_Ext(aiAPI, "AI GPT API", "API of some generative neural network")
+aiChatBot --> aiAPI : [REST]
+
+
+
+' Rel(user, clients, "")
+' Rel(extNotifServices, user, "Уведомления")
+' Rel(user, extPayServices, "Оплата")
+' Rel(clients, apiGate, "[REST]")
+
+' Rel(apiGate, smartHomes, "[REST]")
+' Rel(apiGate, profiles, "[REST]")
+' Rel(apiGate, payments, "[REST]")
+' Rel(apiGate, workflows, "[REST]")
+' Rel(apiGate, notifications, "[REST]")
+
+' Rel(smartHomes, notifications, "[MQ]")
+' Rel(payments, notifications, "[MQ]")
+' Rel(profiles, notifications, "[MQ]")
+' Rel(workflows, notifications, "[MQ]")
+
+' Rel(notifications, extNotifServices, "рассылка")
+' Rel(payments, extPayServices, "Данные по транзакциям")
+
+' Rel(smartHomes, clients, "[MQTT] Управляющих команды")
+' Rel(clients, smartHomes, "[MQTT] Данные и изменения состояния")
+
+@enduml
