@@ -1,0 +1,15 @@
+{
+  "name": "resume-site-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "up dev in docker": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo \"$BRANCH\" | tr '[:upper:]' '[:lower:]' | tr '/' '-'); COMPOSE_PROJECT_NAME=rs-back__$BRANCH docker-compose -f docker-compose.local.yaml up -d",
+    "down dev from docker": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo \"$BRANCH\" | tr '[:upper:]' '[:lower:]' | tr '/' '-'); COMPOSE_PROJECT_NAME=rs-back__$BRANCH docker-compose -f docker-compose.local.yaml down",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
