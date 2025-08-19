@@ -12,6 +12,6 @@ dotnet dev-certs https --trust
 ```
 
 ### Create directory for postgres volume
-```
+```bash
 mkdir -p ./src/backend/temp/pgdata  
 ```
