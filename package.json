@@ -2,11 +2,6 @@
   "name": "resume-site-workspaces",
   "version": "0.0.1",
   "description": "More details about the development of the site here https://t.me/ptetka",
-  "workspaces": [
-    "src/*",
-    "src/backend",
-    "src/frontend/host"
-  ],
   "directories": {
     "doc": "docs"
   },

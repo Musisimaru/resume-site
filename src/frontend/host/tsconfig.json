@@ -1,0 +1,12 @@
+{
+  "extends": "ts-config-single-spa",
+  "files": ["src/resume-site-front-root-config.ts"],
+  "compilerOptions": {
+    "declarationDir": "dist",
+
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test*"]
+}

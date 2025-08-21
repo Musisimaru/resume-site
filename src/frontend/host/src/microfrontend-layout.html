@@ -1,0 +1,40 @@
+<single-spa-router>
+  <!--
+
+    This is the single-spa Layout Definition for your microfrontends.
+    See https://single-spa.js.org/docs/layout-definition/ for more information.
+
+  -->
+
+  <!-- Example layouts you might find helpful:
+
+  <nav>
+    <application name="@org/navbar"></application>
+  </nav>
+  <route path="settings">
+    <application name="@org/settings"></application>
+  </route>
+
+  -->
+
+  <header style="padding:12px">
+    <label for="mfe-switcher" style="margin-right:8px">Microfrontend:</label>
+    <select id="mfe-switcher">
+      <option value="/">Welcome</option>
+      <option value="/react-app">React (SPA)</option>
+      <option value="/vue-app">Vue (SPA)</option>
+    </select>
+  </header>
+
+  <main>
+    <route default>
+      <application name="@single-spa/welcome"></application>
+    </route>
+    <route path="react-app">
+      <application name="@resume-site-front/react-ver"></application>
+    </route>
+    <route path="vue-app">
+      <application name="@resume-site-front/vue"></application>
+    </route>    
+  </main>
+</single-spa-router>
