@@ -54,28 +54,4 @@ auth --> claimsProviders : [saml]
 System_Ext(aiAPI, "AI GPT API", "API of some generative neural network")
 aiChatBot --> aiAPI : [REST]
 
-
-
-' Rel(user, clients, "")
-' Rel(extNotifServices, user, "Уведомления")
-' Rel(user, extPayServices, "Оплата")
-' Rel(clients, apiGate, "[REST]")
-
-' Rel(apiGate, smartHomes, "[REST]")
-' Rel(apiGate, profiles, "[REST]")
-' Rel(apiGate, payments, "[REST]")
-' Rel(apiGate, workflows, "[REST]")
-' Rel(apiGate, notifications, "[REST]")
-
-' Rel(smartHomes, notifications, "[MQ]")
-' Rel(payments, notifications, "[MQ]")
-' Rel(profiles, notifications, "[MQ]")
-' Rel(workflows, notifications, "[MQ]")
-
-' Rel(notifications, extNotifServices, "рассылка")
-' Rel(payments, extPayServices, "Данные по транзакциям")
-
-' Rel(smartHomes, clients, "[MQTT] Управляющих команды")
-' Rel(clients, smartHomes, "[MQTT] Данные и изменения состояния")
-
 @enduml

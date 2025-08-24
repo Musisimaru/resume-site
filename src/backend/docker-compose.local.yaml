@@ -1,0 +1,53 @@
+services:
+  iam-keycloak-01:
+    image: quay.io/keycloak/keycloak:26.3.2
+    container_name: iam-01
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - 9090:8080
+    restart: unless-stopped
+
+  app-db-01:
+    image: postgres:16-bookworm
+    container_name: app-db-01
+    environment:
+      POSTGRES_DB: mucv
+      POSTGRES_USER: mucv-su
+      POSTGRES_PASSWORD: mucv-Pa$$w0rd
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./temp/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+
+  cv-api-01:
+    build:
+      context: ./Resume
+      dockerfile: CV/MU.CV.API/Dockerfile.local
+    container_name: cv-api-01
+    volumes:
+      - "./temp/https/:/https:ro"    
+    environment:
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: Qwerty123
+      ConnectionStrings__Default: >
+        Host=app-db-01;Port=5432;Database=mucv;
+        Username=mucv-su;Password=mucv-Pa$$w0rd;Pooling=true
+    depends_on:
+      app-db-01:
+        condition: service_healthy
+    ports:
+      - 5001:443
+      - 5051:80
+    restart: unless-stopped

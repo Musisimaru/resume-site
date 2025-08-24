@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🧩 Root-config: открыть в браузере",
+      "type": "pwa-chrome",            // можно pwa-msedge, если пользуешь Edge
+      "request": "launch",
+      "url": "http://localhost:9000",
+      "webRoot": "${workspaceFolder}/src/frontend/host", // если монорепо, укажи путь пакета root-config
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${workspaceFolder}/src/frontend/host/*",
+        "webpack:///*": "${workspaceFolder}/src/frontend/host/*",
+        "webpack://[name]/*": "${workspaceFolder}/src/frontend/host/*",
+        "webpack://src/*": "${workspaceFolder}/src/frontend/host/src/*",
+      },
+      "runtimeExecutable": "/Applications/Yandex.app/Contents/MacOS/Yandex",
+      "runtimeArgs": ["--remote-debugging-port=9222"]
+    },
+    {
+      "name": "🛠 Запустить webpack-dev-server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/frontend/host/node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+      "args": ["--mode", "development", "--port", "9000"],
+      "cwd": "${workspaceFolder}/src/frontend/host",
+      "console": "integratedTerminal"
+    }
+  ]
+}
