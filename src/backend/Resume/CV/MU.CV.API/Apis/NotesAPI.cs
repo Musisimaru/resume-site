@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MU.CV.BLL.Common;
+using MU.CV.BLL.Domains.Notes;
 using MU.CV.DAL.Entities.Note;
 
 namespace MU.CV.API.Apis;
@@ -15,38 +16,51 @@ public static class MapNotesApi
         api.MapGet("/{noteId:guid}", GetNoteByUserAsync);
         api.MapPost("/", CreateNoteAsync);
         api.MapPut("/", UpdateNoteAsync);
-        api.MapDelete("/", RemoveNoteAsync);
+        api.MapDelete("/{noteId:guid}", RemoveNoteAsync);
         
         return api;
     }
 
-    private static Task<Results<Ok<Note>, NotFound>> GetNoteByUserAsync(Guid noteId)
+    private static Guid DummyUser = Guid.Empty;
+
+
+    private async static Task<Results<Ok<NoteDto>, NotFound>> GetNoteByUserAsync(Guid noteId,
+        [FromServices] IDtoRead<NoteDto> readService)
     {
-        throw new NotImplementedException();
+        // TODO: add filters by user
+        var note = (await readService.GetByIdAsync(noteId));
+        return TypedResults.Ok(note);
     }
-    
-    private static async Task<Ok<IEnumerable<Note>>> GetNotesByUserAsync([FromServices] ICRUDService<NoteDAL> service)
+
+    private static async Task<Ok<IEnumerable<NoteDto>>> GetNotesByUserAsync([FromServices] IDtoRead<NoteDto> readService)
     {
-        var notes = (await service.GetAllAsync()).Select(note => new Note(note.Id, note.Title, note.Content));
+        // TODO: add filters by user
+        var notes = (await readService.GetAllAsync());
         return TypedResults.Ok(notes);
     }
 
-    private static Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> RemoveNoteAsync(Guid noteId)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> RemoveNoteAsync(Guid noteId, 
+        [FromServices] IDtoAuthorizedWrite<NoteDto> service)
     {
-        throw new NotImplementedException();
+        await service.RemoveAsync(noteId);
+        return TypedResults.Ok();
     }
 
-    private static Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UpdateNoteAsync(Note updatedNote)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UpdateNoteAsync(NoteDto updatedNote, 
+        [FromServices] IDtoAuthorizedWrite<NoteDto> service)
     {
-        throw new NotImplementedException();
+        await service.UpdateAsync(updatedNote, DummyUser);
+        return TypedResults.Ok();
     }
 
-    private static Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> CreateNoteAsync(Note createNote)
+    private static async Task<Results<Ok<Guid>, BadRequest<string>, ProblemHttpResult>> CreateNoteAsync(
+        NoteDto createdNote, 
+        [FromServices] IDtoAuthorizedWrite<NoteDto> service)
     {
-        throw new NotImplementedException();
+        var newId = await service.CreateAsync(createdNote, DummyUser);
+        return TypedResults.Ok(newId);
     }
 
 
 }
 
-public record Note(Guid Id, string Title, string Content);

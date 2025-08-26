@@ -9,7 +9,7 @@ public static class CVServiceServicesCollectionExtentions
 {
     public static IServiceCollection AddCVServices(this IServiceCollection services)
     {
-        services.AddScoped<ICRUDService<NoteDAL>, NotesCRUDService>();
+        services.AddNotesServices();
         
         return services;
     }

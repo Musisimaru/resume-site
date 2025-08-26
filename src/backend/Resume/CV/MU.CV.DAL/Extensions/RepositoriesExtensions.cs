@@ -11,7 +11,9 @@ public static class CVServiceRepositoriesCollectionExtensions
     public static IServiceCollection AddCVRepositories(this IServiceCollection services)
     {
 
-        services.AddScoped<IBaseRepository<NoteDAL>, NotesRepository>();
+        services.AddScoped<IBaseRepository<NoteDAL>, NotesHistorianRepository>();
+        services.AddScoped<IHistorianRepository<NoteDAL>, NotesHistorianRepository>();
+        services.AddScoped<IProjectorRepository<NoteDAL>, NotesProjectorRepository>();
 
         return services;
     } 
