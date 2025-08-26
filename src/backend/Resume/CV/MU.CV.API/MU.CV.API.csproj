@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+        <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
@@ -16,6 +18,15 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ExceptionHandler\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MU.CV.BLL\MU.CV.BLL.csproj" />
+      <ProjectReference Include="..\MU.CV.DAL\MU.CV.DAL.csproj" />
     </ItemGroup>
 
 </Project>

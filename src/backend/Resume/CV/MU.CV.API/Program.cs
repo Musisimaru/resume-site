@@ -1,3 +1,13 @@
+using System.Diagnostics;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using MU.CV.API.Apis;
+// using MU.CV.API.ExceptionHandler;
+using Hellang.Middleware.ProblemDetails;
+using MU.CV.API.Extensions;
+using MU.CV.BLL.Extensions;
+using MU.CV.DAL.Extensions;
+
 namespace MU.CV.API;
 
 public class Program
@@ -6,15 +16,38 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.AddProblemProcessor();
+        builder.AddBasicServiceDefaults();
+
+        builder.Services.AddCVDataContext(builder.Configuration.GetConnectionString("CVDb"));
+        builder.Services.AddCVRepositories();
+        builder.Services.AddCVServices();
         // Add services to the container.
         builder.Services.AddAuthorization();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        
+        builder.Services
+            .AddApiVersioning(o =>
+            {
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.ReportApiVersions = true;
+                o.ApiVersionReader = new HeaderApiVersionReader("Api-Version");
+            })
+            // для Swagger с группировкой по версиям
+            .AddApiExplorer(o =>
+            {
+                o.GroupNameFormat = "'v'VVV";
+                o.SubstituteApiVersionInUrl = true;
+            });
 
         var app = builder.Build();
 
+        app.AddProblemDetails();
+        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -25,6 +58,11 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+
+        app.MapDefaultEndpoints();
+        
+        var orders = app.NewVersionedApi();
+        orders.MapNotesApiV1();
 
         var summaries = new[]
         {

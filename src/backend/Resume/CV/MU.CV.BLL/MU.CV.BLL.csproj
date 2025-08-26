@@ -6,4 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Common\Models\" />
+      <Folder Include="Common\Utils\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MU.CV.DAL\MU.CV.DAL.csproj" />
+    </ItemGroup>
+
 </Project>
