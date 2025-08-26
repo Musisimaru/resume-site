@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: mucv-Pa$$w0rd
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./temp/pgdata:/var/lib/postgresql/data
+      - ./temp:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
       interval: 5s

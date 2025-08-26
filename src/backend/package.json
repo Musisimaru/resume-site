@@ -4,7 +4,10 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "[run local db]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); (docker run -d --name cv-db-01__$BRANCH --restart unless-stopped -e POSTGRES_DB=mucv -e POSTGRES_USER=mucv-su -e POSTGRES_PASSWORD='mucv-Pa$$w0rd' -e PGDATA=/var/lib/postgresql/data/pgdata -v \"$PWD/temp:/var/lib/postgresql/data\" -p 5433:5432 postgres:16-bookworm)", 
+    "[run local db in docker]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); (docker run -d --name cv-db-01__$BRANCH --restart unless-stopped -e POSTGRES_DB=mucv -e POSTGRES_USER=mucv-su -e POSTGRES_PASSWORD='mucv-Pa$$w0rd' -e PGDATA=/var/lib/postgresql/data/pgdata -v \"$PWD/temp:/var/lib/postgresql/data\" -p 5433:5432 postgres:16-bookworm)", 
+    "[stop local db in docker]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); docker stop --name cv-db-01__$BRANCH", 
+    
+    "[remove local db in docker]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); (docker rm --name cv-db-01__$BRANCH); rm -r \"$PWD/temp/pgdata\"",
     "[build local image]: cv-api": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); docker build ./Resume -f Resume/CV/MU.CV.API/Dockerfile.local -t mu/cv-api:local__$BRANCH ",
 
 
