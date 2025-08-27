@@ -3,6 +3,15 @@
 ### ───
 @MU.CV.API_HostAddress = http://localhost:5021
 @apiVersion = 1.0
+
+# Keycloak
+@kc = http://localhost:9090
+@realm = resume-realm
+@clientId = resume-api
+@clientSecret = oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq
+@username = user1
+@password = password123
+
 # Если у вас есть авторизация — положите сюда JWT:
 @token = {{token}}
 
@@ -10,6 +19,23 @@
 @noteId    = 00000000-0000-0000-0000-000000000000
 @newNoteId = 11111111-1111-1111-1111-111111111111
 
+# @name login
+POST {{kc}}/realms/{{realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{clientId}}&username={{username}}&password={{password}}&scope=openid
+
+> {%
+    const data = JSON.parse(response.body);
+    client.global.set("access_token", data.access_token);
+    client.global.set("refresh_token", data.refresh_token);
+    client.log("access_token saved (password grant)");
+%}
+
+### Если используешь password-грант, можно перезаписать access_token так:
+### @access_token = {{login.response.body.$.access_token}}
+
+###
 
 GET {{MU.CV.API_HostAddress}}/weatherforecast/
 Accept: application/json

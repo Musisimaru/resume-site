@@ -4,6 +4,8 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
+    "[run local keycloak]: iam": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); docker run -d --name iam-01__$BRANCH --restart unless-stopped -p 9090:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin -v ./keycloak/dev-data/:/opt/keycloak/data/import/ quay.io/keycloak/keycloak:26.3.2 start-dev --import-realm",
+    "[remove local keycloak]: iam":"BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); docker rm iam-01__$BRANCH -f -v",
     "[run local db in docker]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); (docker run -d --name cv-db-01__$BRANCH --restart unless-stopped -e POSTGRES_DB=mucv -e POSTGRES_USER=mucv-su -e POSTGRES_PASSWORD='mucv-Pa$$w0rd' -e PGDATA=/var/lib/postgresql/data/pgdata -v \"$PWD/temp:/var/lib/postgresql/data\" -p 5433:5432 postgres:16-bookworm)", 
     "[stop local db in docker]: cv-db": "BRANCH=$(git rev-parse --abbrev-ref HEAD); BRANCH=$(echo $BRANCH | tr '[:upper:]' '[:lower:]' ); docker stop --name cv-db-01__$BRANCH", 
     
