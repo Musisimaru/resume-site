@@ -44,38 +44,54 @@ public abstract class BaseCVRepository<TEntity> : IBaseRepository<TEntity> where
         _context.Set<TEntity>().Remove(entity);
     }
 
+    protected static IQueryable<TEntity> ExtendQuery(IQueryable<TEntity> q, ISpecification<TEntity>? spec = null)
+    {
+        if (spec is null) return q;
+        
+        if (spec.Criteria != null) q = q.Where(spec.Criteria);
+        foreach (var inc in spec.Includes) q = q.Include(inc);
+        if (spec.OrderBy != null) q = q.OrderBy(spec.OrderBy);
+        if (spec.OrderByDesc != null) q = q.OrderByDescending(spec.OrderByDesc);
+        if (spec.Skip.HasValue) q = q.Skip(spec.Skip.Value);
+        if (spec.Take.HasValue) q = q.Take(spec.Take.Value);
 
-    protected IQueryable<TEntity?> GetByIdQuery(Guid id) =>
+        return q;
+    }
+
+    protected IQueryable<TEntity> GetByIdQuery(Guid id) => 
         _context.Set<TEntity>()
             .Where(en => en.Id == id)
             .AsNoTracking();
-    
-    public virtual async Task<TEntity?> GetAsync(Guid id, CancellationToken ct = default)
+
+    public virtual async Task<TEntity> GetAsync(Guid id, CancellationToken ct = default)
     {
         var entity = (await GetByIdQuery(id)
                    .SingleOrDefaultAsync(ct))
                ?? throw new NotFoundException($"The entity {typeof(TEntity).Name} not found by id '{id}'");
         return entity;
     }
+    
 
-    protected IQueryable<TEntity> GetAllQuery() => _context.Set<TEntity>()
-        .AsNoTracking()
+    protected IQueryable<TEntity> GetAllQuery(ISpecification<TEntity>? spec = null) => 
+        ExtendQuery(_context.Set<TEntity>().AsNoTracking(), spec)
         .TagWith($"Repo:GetAll<{typeof(TEntity).Name}>");
 
-    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default) =>
-        await GetAllQuery()
-            .ToListAsync(ct);
-    protected IQueryable<TEntity> GetPageQuery(int page, int size) => _context.Set<TEntity>()
+    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        (await GetAllQuery(spec)
+            .ToListAsync(ct));
+    
+    
+    protected IQueryable<TEntity> GetPageQuery(int page, int size, ISpecification<TEntity>? spec = null) => 
+        ExtendQuery(_context.Set<TEntity>()
         .AsNoTracking()
         .OrderBy(e => EF.Property<Guid>(e, "Id"))
-        .Skip((page - 1) * size).Take(size)
+        .Skip((page - 1) * size).Take(size), spec)
         .TagWith($"Repo:GetPage<{typeof(TEntity).Name}>:size{size}:page{page})");
-
     
-    public virtual async Task<IReadOnlyList<TEntity>> GetPageAsync(int page, int size, CancellationToken ct = default) =>
-        await GetPageQuery(page, size)
+    public virtual async Task<IReadOnlyList<TEntity>> GetPageAsync(int page, int size, CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        await GetPageQuery(page, size, spec)
             .ToListAsync(ct);
     
-    public ConfiguredCancelableAsyncEnumerable<TEntity> StreamAllAsync(CancellationToken ct = default) =>
-        GetAllQuery().AsAsyncEnumerable().WithCancellation(ct);
+    public ConfiguredCancelableAsyncEnumerable<TEntity> StreamAllAsync(CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        GetAllQuery(spec).AsAsyncEnumerable().WithCancellation(ct);
 }

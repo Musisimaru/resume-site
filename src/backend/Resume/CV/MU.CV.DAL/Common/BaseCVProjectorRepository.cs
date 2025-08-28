@@ -16,20 +16,20 @@ public abstract class BaseCVProjectorRepository<TEntity>(CVDbContext context) : 
     }
 
     public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Func<TEntity, TResult> projector,
-        CancellationToken ct = default) =>
-        (await GetAllQuery()
+        CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        (await GetAllQuery(spec)
             .ToListAsync(ct))
             .Select(projector);
 
-    public async Task<IEnumerable<TResult>> GetPageAsync<TResult>(int page, int size, Func<TEntity, TResult> projector, CancellationToken ct = default) =>
-        (await GetPageQuery(page, size)
+    public async Task<IEnumerable<TResult>> GetPageAsync<TResult>(int page, int size, Func<TEntity, TResult> projector, CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        (await GetPageQuery(page, size, spec)
             .ToListAsync(ct))
             .Select(projector);
     
 
-    public async IAsyncEnumerable<TResult> StreamAllAsync<TResult>(Func<TEntity, TResult> projector, CancellationToken ct = default)
+    public async IAsyncEnumerable<TResult> StreamAllAsync<TResult>(Func<TEntity, TResult> projector, CancellationToken ct = default, ISpecification<TEntity>? spec = null)
     {
-        await foreach (var item in GetAllQuery().AsAsyncEnumerable().WithCancellation(ct))
+        await foreach (var item in GetAllQuery(spec).AsAsyncEnumerable().WithCancellation(ct))
         {
             yield return projector(item);
         }

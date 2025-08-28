@@ -8,6 +8,7 @@ using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using MU.CV.API.Extensions;
+using MU.CV.BLL.Common.User;
 using MU.CV.BLL.Extensions;
 using MU.CV.DAL.Extensions;
 
@@ -72,6 +73,10 @@ public class Program
             });                                               
 
         builder.Services.AddAuthorization();
+        
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddCurrentUser();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

@@ -10,7 +10,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseDbEntity
     public Task DeleteAsync(Guid id, CancellationToken ct = default);
     
     public Task<TEntity?> GetAsync(Guid id, CancellationToken ct = default);
-    public Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default);
-    public Task<IReadOnlyList<TEntity>> GetPageAsync(int page, int size, CancellationToken ct = default);
-    public ConfiguredCancelableAsyncEnumerable<TEntity> StreamAllAsync(CancellationToken ct = default);
+    public Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken ct = default, ISpecification<TEntity>? spec = null);
+    public Task<IReadOnlyList<TEntity>> GetPageAsync(int page, int size, CancellationToken ct = default, ISpecification<TEntity>? spec = null);
+    public ConfiguredCancelableAsyncEnumerable<TEntity> StreamAllAsync(CancellationToken ct = default, ISpecification<TEntity>? spec = null);
 }

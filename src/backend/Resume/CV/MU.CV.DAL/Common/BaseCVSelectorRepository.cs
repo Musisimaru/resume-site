@@ -19,21 +19,19 @@ public abstract class BaseCVSelectorRepository<TEntity>(CVDbContext context) : B
     }
 
     public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(Expression<Func<TEntity, TResult>> selector,
-        CancellationToken ct = default) =>
-        (await GetAllQuery()
-            .Select(selector)
-            .ToListAsync(ct))
-            ;
-
-    public async Task<IEnumerable<TResult>> GetPageAsync<TResult>(int page, int size, Expression<Func<TEntity, TResult>> selector, CancellationToken ct = default) =>
-        (await GetPageQuery(page, size)
+        CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        (await GetAllQuery(spec)
             .Select(selector)
             .ToListAsync(ct));
 
+    public async Task<IEnumerable<TResult>> GetPageAsync<TResult>(int page, int size, Expression<Func<TEntity, TResult>> selector, CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        (await GetPageQuery(page, size, spec)
+            .Select(selector)
+            .ToListAsync(ct));
 
     public ConfiguredCancelableAsyncEnumerable<TResult> StreamAllAsync<TResult>(
-        Expression<Func<TEntity, TResult>> selector, CancellationToken ct = default) =>
-        GetAllQuery().Select(selector).AsAsyncEnumerable().WithCancellation(ct);
+        Expression<Func<TEntity, TResult>> selector, CancellationToken ct = default, ISpecification<TEntity>? spec = null) =>
+        GetAllQuery(spec).Select(selector).AsAsyncEnumerable().WithCancellation(ct);
 
 
 }
