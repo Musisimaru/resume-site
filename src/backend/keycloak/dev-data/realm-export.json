@@ -1,6 +1,8 @@
 {
   "realm": "resume-realm",
   "enabled": true,
+  "registrationAllowed": true,
+  "rememberMe": true,
   "roles": {
     "realm": [
       {
@@ -17,7 +19,6 @@
       }
     ]
   },
-
   "users": [
     {
       "username": "service-account-resume-identity-reader",
@@ -119,12 +120,14 @@
           "protocolMapper": "oidc-audience-mapper",
           "config": {
             "included.client.audience": "resume-api",
+            "id.token.claim": "true",
+            "lightweight.claim": "true",
+            "introspection.token.claim": "true",
             "access.token.claim": "true",
-            "id.token.claim": "false"
+            "userinfo.token.claim": "false"
           }
         },
         {
-          "id": "4e34b2ce-c008-4fac-8417-066baa30f252",
           "name": "sub",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-sub-mapper",
@@ -135,7 +138,23 @@
             "access.token.claim": "true"
           }
         },
-
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "false",
+            "user.attribute": "foo",
+            "id.token.claim": "false",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "role",
+            "jsonType.label": "String"
+          }
+        },
         {
           "name": "email",
           "protocol": "openid-connect",
@@ -145,9 +164,9 @@
             "usermodel.property": "email",
             "userinfo.token.claim": "true",
             "user.attribute": "email",
-            "id.token.claim": "true",
+            "id.token.claim": "false",
             "lightweight.claim": "false",
-            "access.token.claim": "true",
+            "access.token.claim": "false",
             "claim.name": "email",
             "jsonType.label": "String"
           }
@@ -162,9 +181,9 @@
             "usermodel.property": "firstName",
             "userinfo.token.claim": "true",
             "user.attribute": "firstName",
-            "id.token.claim": "true",
+            "id.token.claim": "false",
             "lightweight.claim": "false",
-            "access.token.claim": "true",
+            "access.token.claim": "false",
             "claim.name": "given_name",
             "jsonType.label": "String"
           }
@@ -179,9 +198,9 @@
             "usermodel.property": "lastName",
             "userinfo.token.claim": "true",
             "user.attribute": "lastName",
-            "id.token.claim": "true",
+            "id.token.claim": "false",
             "lightweight.claim": "false",
-            "access.token.claim": "true",
+            "access.token.claim": "false",
             "claim.name": "family_name",
             "jsonType.label": "String"
           }
@@ -191,12 +210,16 @@
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "config": {
+            "aggregate.attrs": "false",
+            "introspection.token.claim": "true",
+            "multivalued": "false",
+            "userinfo.token.claim": "true",
             "user.attribute": "company_name",
+            "id.token.claim": "false",
+            "lightweight.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "company_name",
-            "jsonType.label": "String",
-            "access.token.claim": "true",
-            "id.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "jsonType.label": "String"
           }
         },
         {
@@ -204,12 +227,16 @@
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "config": {
+            "aggregate.attrs": "false",
+            "introspection.token.claim": "true",
+            "multivalued": "false",
+            "userinfo.token.claim": "true",
             "user.attribute": "company_logo",
+            "id.token.claim": "false",
+            "lightweight.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "company_logo",
-            "jsonType.label": "String",
-            "access.token.claim": "true",
-            "id.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "jsonType.label": "String"
           }
         },
         {
@@ -217,12 +244,16 @@
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",
           "config": {
+            "aggregate.attrs": "false",
+            "introspection.token.claim": "true",
+            "multivalued": "false",
+            "userinfo.token.claim": "true",
             "user.attribute": "avatar",
+            "id.token.claim": "false",
+            "lightweight.claim": "false",
+            "access.token.claim": "false",
             "claim.name": "avatar",
-            "jsonType.label": "String",
-            "access.token.claim": "true",
-            "id.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "jsonType.label": "String"
           }
         }
       ]
@@ -233,16 +264,8 @@
       "clientId": "resume-frontend",
       "enabled": true,
       "publicClient": true,
-      "redirectUris": [
-        "http://localhost:3000/*",
-        "https://oauth.pstmn.io/*",
-        "http://localhost:5021/*"
-      ],
-      "webOrigins": [
-        "http://localhost:3000",
-        "https://oauth.pstmn.io",
-        "http://localhost:5021"
-      ],
+      "redirectUris": ["http://localhost:3000/*", "http://localhost:5021/*", "https://oauth.pstmn.io/*"],
+      "webOrigins": ["http://localhost:3000", "http://localhost:5021", "https://oauth.pstmn.io"],
       "directAccessGrantsEnabled": false,
 
       "standardFlowEnabled": true,
@@ -263,6 +286,14 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "Ai5fOhn06SZCgCBf3tIcvNHHh6TP6BLq",
+      "serviceAccountsEnabled": true,
+      "optionalClientScopes": ["offline_access"]
+    },
+    {
+      "clientId": "resume-api-introspector",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "qxjrihH3DIzAv7GWsIUBBdOZ1KpaGNN0",
       "serviceAccountsEnabled": true,
       "optionalClientScopes": ["offline_access"]
     }

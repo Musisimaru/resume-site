@@ -23,9 +23,6 @@ public static class MapNotesApi
         return api;
     }
 
-    private static Guid DummyUser = Guid.Empty;
-
-
     private async static Task<Results<Ok<NoteDto>, NotFound>> GetNoteByUserAsync(Guid noteId,
         [FromServices] IDtoRead<NoteDto> readService)
     {

@@ -4,6 +4,9 @@
         "frontends",
         "isready",
         "mucv",
-        "pgdata"
+        "multivalued",
+        "pgdata",
+        "pkce",
+        "usermodel"
     ]
 }

@@ -7,6 +7,7 @@ using MU.CV.API.Apis;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using MU.CV.API.Accessors;
 using MU.CV.API.Extensions;
 using MU.CV.BLL.Common.User;
 using MU.CV.BLL.Extensions;
@@ -53,8 +54,8 @@ public class Program
                     ClockSkew = TimeSpan.FromSeconds(30),
                     
                     // mappings
-                    NameClaimType = "preferred_username",
-                    RoleClaimType = "roles"
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                    RoleClaimType = ClaimTypes.Role
                 };
 
                 // logs for 401
@@ -75,7 +76,11 @@ public class Program
         builder.Services.AddAuthorization();
         
         builder.Services.AddHttpContextAccessor();
-
+        
+        builder.Services.AddHttpContextAccessTokenProvider();
+        
+        builder.Services.AddMemoryCache();
+        builder.Services.AddInrospection(builder.Configuration["Keycloak:BaseUrl"]);
         builder.Services.AddCurrentUser();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -167,28 +172,9 @@ public class Program
 
         app.MapDefaultEndpoints();
         
-        var orders = app.NewVersionedApi();
-        orders.MapNotesApiV1();
-
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
-                        {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+        var cvApi = app.NewVersionedApi();
+        cvApi.MapNotesApiV1();
+        cvApi.MapSelfIdentityApiV1();
 
         app.Run();
     }
