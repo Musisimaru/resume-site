@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MU.CV.BLL.Common.User;
+namespace MU.Identity.BLL.Common.User;
 
-//TODO: remove it
 public static class IntrospectionExtension
 {
     public static IServiceCollection AddInrospection(this IServiceCollection services, string? introspectorBaseUrl)

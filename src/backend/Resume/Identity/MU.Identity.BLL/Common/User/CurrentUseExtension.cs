@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
-using MU.CV.BLL.Exceptions;
+using MU.Identity.BLL.Exceptions;
 
-namespace MU.CV.BLL.Common.User;
+namespace MU.Identity.BLL.Common.User;
 
 public static class CurrentUseExtension{
     public static IServiceCollection AddCurrentUser(this IServiceCollection services)
     {
         services.AddScoped<ICurrentUser, CurrentUser>();
-        // services.AddScoped<ILazyRichUser, RichCurrentUser>();
+        services.AddScoped<ILazyRichUser, RichCurrentUser>();
         
         return services;
     }

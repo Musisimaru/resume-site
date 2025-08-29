@@ -1,16 +1,13 @@
-using System.Diagnostics;
 using System.Security.Claims;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using MU.CV.API.Apis;
 // using MU.CV.API.ExceptionHandler;
-using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using MU.CV.API.Accessors;
-using MU.CV.API.Extensions;
 using MU.CV.BLL.Common.User;
 using MU.CV.BLL.Extensions;
+using MU.CV.Core;
 using MU.CV.DAL.Extensions;
 
 namespace MU.CV.API;
@@ -76,18 +73,18 @@ public class Program
         builder.Services.AddAuthorization();
         
         builder.Services.AddHttpContextAccessor();
-        
+                
         builder.Services.AddHttpContextAccessTokenProvider();
         
         builder.Services.AddMemoryCache();
-        builder.Services.AddInrospection(builder.Configuration["Keycloak:BaseUrl"]);
-        builder.Services.AddCurrentUser();
 
+        builder.Services.AddCurrentUser();
+        
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Resume API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CV API", Version = "v1" });
 
             const string realm = "resume-realm";
             //TODO: все значения в appsettings
@@ -174,7 +171,6 @@ public class Program
         
         var cvApi = app.NewVersionedApi();
         cvApi.MapNotesApiV1();
-        cvApi.MapSelfIdentityApiV1();
         cvApi.MapCvApiV1();
 
         app.Run();

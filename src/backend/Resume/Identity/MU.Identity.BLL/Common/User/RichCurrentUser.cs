@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using MU.CV.BLL.Exceptions;
+using MU.Identity.BLL.Exceptions;
 
-namespace MU.CV.BLL.Common.User;
+namespace MU.Identity.BLL.Common.User;
 
 public class RichCurrentUser : CurrentUser, ILazyRichUser
 {
@@ -17,7 +17,6 @@ public class RichCurrentUser : CurrentUser, ILazyRichUser
     private readonly Lazy<Task<RichCurrentUser>> _init;
     private readonly string jwt;
 
-    // TODO: Remove it
     public RichCurrentUser(IAccessTokenProvider accessor, ITokenIntrospectionClient tokenIntrospectionClient)
         : base(accessor)
     {
