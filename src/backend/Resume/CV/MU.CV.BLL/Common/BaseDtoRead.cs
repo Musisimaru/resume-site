@@ -10,14 +10,14 @@ public abstract class BaseDtoRead<TDbEntity, TDtoEntity>: IDtoRead<TDtoEntity>
 {
     protected readonly IProjectorRepository<TDbEntity> _readRepo;
     
-    protected Func<TDbEntity, TDtoEntity> _dtoProjector = x => new TDtoEntity();
+    protected Func<TDbEntity?, TDtoEntity?> _dtoProjector = x => new TDtoEntity();
 
     public BaseDtoRead(IProjectorRepository<TDbEntity> repository)
     {
         _readRepo = repository;
     }
 
-    public BaseDtoRead(IProjectorRepository<TDbEntity> repository, Func<TDbEntity, TDtoEntity> dtoProjector)
+    public BaseDtoRead(IProjectorRepository<TDbEntity> repository, Func<TDbEntity?, TDtoEntity?> dtoProjector)
         : this(repository)
     {
         _dtoProjector = dtoProjector;

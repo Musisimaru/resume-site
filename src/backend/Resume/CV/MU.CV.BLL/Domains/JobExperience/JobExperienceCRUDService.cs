@@ -11,7 +11,7 @@ public class JobExperienceWriteService(IBaseRepository<JobExperienceDAL> repo, I
     : BaseDtoWrite<JobExperienceDAL, JobExperienceDto>(repo, uow);
 
 public class JobExperienceReadService(IProjectorRepository<JobExperienceDAL> repo)
-    : BaseDtoRead<JobExperienceDAL, JobExperienceDto>(repo, dal => new JobExperienceDto(
+    : BaseDtoRead<JobExperienceDAL, JobExperienceDto>(repo, dal => dal is {} ? new JobExperienceDto(
         dal.Id,
         dal.CvId,
         dal.PositionDescription,
@@ -21,7 +21,7 @@ public class JobExperienceReadService(IProjectorRepository<JobExperienceDAL> rep
         dal.JobCompanyName,
         dal.JobCompanyLogo,
         dal.IsIT,
-        dal.IsFreelance));
+        dal.IsFreelance) : null);
 
 public static class JobExperienceExtensions
 {

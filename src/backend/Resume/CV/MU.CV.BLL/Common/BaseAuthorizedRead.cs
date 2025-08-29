@@ -14,7 +14,7 @@ public abstract class BaseAuthorizedRead<TDbEntity, TDtoEntity> : IDtoRead<TDtoE
 
     protected readonly IProjectorRepository<TDbEntity> _readRepo;
     
-    protected Func<TDbEntity, TDtoEntity> _dtoProjector = x => new TDtoEntity();
+    protected Func<TDbEntity?, TDtoEntity?> _dtoProjector = x => new TDtoEntity();
 
     public BaseAuthorizedRead(
         IProjectorRepository<TDbEntity> repository, 
@@ -27,7 +27,7 @@ public abstract class BaseAuthorizedRead<TDbEntity, TDtoEntity> : IDtoRead<TDtoE
     public BaseAuthorizedRead(
         IProjectorRepository<TDbEntity> repository, 
         ICurrentUser currentUser, 
-        Func<TDbEntity, TDtoEntity> dtoProjector)
+        Func<TDbEntity?, TDtoEntity?> dtoProjector)
         : this(repository, currentUser)
     {
         _dtoProjector = dtoProjector;

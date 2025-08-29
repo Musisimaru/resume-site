@@ -63,11 +63,10 @@ public abstract class BaseCVRepository<TEntity> : IBaseRepository<TEntity> where
             .Where(en => en.Id == id)
             .AsNoTracking();
 
-    public virtual async Task<TEntity> GetAsync(Guid id, CancellationToken ct = default)
+    public virtual async Task<TEntity?> GetAsync(Guid id, CancellationToken ct = default)
     {
         var entity = (await GetByIdQuery(id)
-                   .SingleOrDefaultAsync(ct))
-               ?? throw new NotFoundException($"The entity {typeof(TEntity).Name} not found by id '{id}'");
+                   .SingleOrDefaultAsync(ct));
         return entity;
     }
     

@@ -11,7 +11,7 @@ public class CvWriteService(IBaseRepository<CvDAL> repo, IUnitOfWork uow)
     : BaseDtoWrite<CvDAL, CvDto>(repo, uow);
 
 public class CvReadService(IProjectorRepository<CvDAL> repo)
-    : BaseDtoRead<CvDAL, CvDto>(repo, dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath)), ICvReadByPath
+    : BaseDtoRead<CvDAL, CvDto>(repo, dal => dal is {} ? new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath) : null), ICvReadByPath
 {
     public async Task<CvDto?> GetByUniquePathAsync(string uniquePath, CancellationToken ct = default)
     {
