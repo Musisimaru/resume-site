@@ -20,7 +20,7 @@ public class CvAuthorizedWriteService(IHistorianRepository<CvDAL> repo, IUnitOfW
         });
 
 public class CvAuthorizedReadService(IProjectorRepository<CvDAL> repo, ICurrentUser user)
-    : BaseAuthorizedRead<CvDAL, CvDto>(repo, user, (dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath)))
+    : BaseAuthorizedRead<CvDAL, CvDto>(repo, user, (dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath))), ICvReadByPath
 {
     public async Task<CvDto?> GetByUniquePathAsync(string uniquePath, CancellationToken ct = default)
     {
@@ -36,6 +36,7 @@ public static class CvExtentions
     {
         services.AddScoped<IDtoWrite<CvDto>, CvAuthorizedWriteService>();
         services.AddScoped<IDtoRead<CvDto>, CvAuthorizedReadService>();
+        services.AddScoped<ICvReadByPath, CvPublicReadService>();
         
         return services;
     }

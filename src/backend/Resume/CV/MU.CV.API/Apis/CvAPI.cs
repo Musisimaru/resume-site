@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using MU.CV.BLL.Common;
+using MU.CV.BLL.Domains.Cv;
+using MU.CV.BLL.Domains.JobExperience;
+
 namespace MU.CV.API.Apis;
 
 public static class CvAPI
@@ -11,69 +17,83 @@ public static class CvAPI
         api.MapPost("/", CreateCV);
         api.MapPut("/", UpdateCV);
         api.MapDelete("/{cvId:guid}", RemoveCV);
-        api.MapDelete("/decipher/{cvPath:string}", DecipherPath);
+        app.MapGet("/api/cv/decipher/{cvPath}", DecipherPath).AllowAnonymous().HasApiVersion(1.0);
         
-        api.MapGet("/{cvId:guid}/blocks", GetCVBlocks);
-        api.MapGet("/{cvId:guid}/blocks/{blockId:guid}", GetCVBlock);
-        api.MapPost("/{cvId:guid}/blocks/{blockId:guid}", CreateCVBlock);
-        api.MapPut("/{cvId:guid}/blocks/{blockId:guid}", UpdateCVBlock);
-        api.MapDelete("/{cvId:guid}/blocks/{blockId:guid}", RemoveCVBlock);
+        api.MapGet("/{cvId:guid}/blocks", GetJobExperiences);
+        api.MapGet("/{cvId:guid}/blocks/{blockId:guid}", GetJobExperience);
+        api.MapPost("/{cvId:guid}/blocks/{blockId:guid}", CreateJobExperience);
+        api.MapPut("/{cvId:guid}/blocks/{blockId:guid}", UpdateJobExperience);
+        api.MapDelete("/{cvId:guid}/blocks/{blockId:guid}", RemoveJobExperience);
 
         return api;
     }
 
-    private static Task DecipherPath(HttpContext context)
+    private static async Task<Results<Ok<CvDto>, NotFound>> DecipherPath(string cvPath, [FromServices] ICvReadByPath readByPath, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var cv = await readByPath.GetByUniquePathAsync(cvPath, ct);
+        if (cv is null) return TypedResults.NotFound();
+        return TypedResults.Ok(cv);
     }
 
-    private static Task RemoveCV(HttpContext context)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> RemoveCV(Guid cvId, [FromServices] IDtoWrite<CvDto> writeService)
     {
-        throw new NotImplementedException();
+        await writeService.RemoveAsync(cvId);
+        return TypedResults.Ok();
     }
 
-    private static Task CreateCV(HttpContext context)
+    private static async Task<Results<Ok<Guid>, BadRequest<string>, ProblemHttpResult>> CreateCV([FromBody] CvDto createdCv, [FromServices] IDtoWrite<CvDto> writeService)
     {
-        throw new NotImplementedException();
+        var newId = await writeService.CreateAsync(createdCv);
+        return TypedResults.Ok(newId);
     }
 
-    private static Task UpdateCV(HttpContext context)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UpdateCV([FromBody] CvDto updatedCv, [FromServices] IDtoWrite<CvDto> writeService)
     {
-        throw new NotImplementedException();
+        await writeService.UpdateAsync(updatedCv);
+        return TypedResults.Ok();
     }
 
-    private static Task GetCVs(HttpContext context)
+    private static async Task<Ok<IEnumerable<CvDto>>> GetCVs([FromServices] IDtoRead<CvDto> readService)
     {
-        throw new NotImplementedException();
+        var items = await readService.GetAllAsync();
+        return TypedResults.Ok(items);
     }
 
-    private static Task GetCV(HttpContext context)
+    private static async Task<Results<Ok<CvDto>, NotFound>> GetCV(Guid cvId, [FromServices] IDtoRead<CvDto> readService)
     {
-        throw new NotImplementedException();
+        var cv = await readService.GetByIdAsync(cvId);
+        return TypedResults.Ok(cv);
     }
 
-    private static Task RemoveCVBlock(HttpContext context)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> RemoveJobExperience(Guid cvId, Guid blockId, [FromServices] IDtoWrite<JobExperienceDto> writeService)
     {
-        throw new NotImplementedException();
+        await writeService.RemoveAsync(blockId);
+        return TypedResults.Ok();
     }
 
-    private static Task UpdateCVBlock(HttpContext context)
+    private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UpdateJobExperience(Guid cvId, Guid blockId, [FromBody] JobExperienceDto updated, [FromServices] IDtoWrite<JobExperienceDto> writeService)
     {
-        throw new NotImplementedException();
+        updated = updated with { Id = blockId, CvId = cvId };
+        await writeService.UpdateAsync(updated);
+        return TypedResults.Ok();
     }
 
-    private static Task CreateCVBlock(HttpContext context)
+    private static async Task<Results<Ok<Guid>, BadRequest<string>, ProblemHttpResult>> CreateJobExperience(Guid cvId, Guid blockId, [FromBody] JobExperienceDto created, [FromServices] IDtoWrite<JobExperienceDto> writeService)
     {
-        throw new NotImplementedException();
+        created = created with { CvId = cvId };
+        var newId = await writeService.CreateAsync(created);
+        return TypedResults.Ok(newId);
     }
 
-    private static Task GetCVBlock(HttpContext context)
+    private static async Task<Results<Ok<JobExperienceDto>, NotFound>> GetJobExperience(Guid cvId, Guid blockId, [FromServices] IDtoRead<JobExperienceDto> readService)
     {
-        throw new NotImplementedException();
+        var block = await readService.GetByIdAsync(blockId);
+        return TypedResults.Ok(block);
     }
 
-    private static Task GetCVBlocks(HttpContext context)
+    private static async Task<Ok<IEnumerable<JobExperienceDto>>> GetJobExperiences(Guid cvId, [FromServices] IDtoRead<JobExperienceDto> readService)
     {
-        throw new NotImplementedException();
+        var blocks = await readService.GetAllAsync();
+        return TypedResults.Ok(blocks.Where(x => x.CvId == cvId));
     }
 }
