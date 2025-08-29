@@ -19,7 +19,7 @@ public class NotesAuthorizedWriteService(IHistorianRepository<NoteDAL> repo, IUn
 public class NotesAuthorizedReadService(IProjectorRepository<NoteDAL> repo, ICurrentUser user)
     : BaseAuthorizedRead<NoteDAL, NoteDto>(repo, user, (dal => new NoteDto(dal.Id, dal.Title, dal.Content)));
 
-public static class NotesExtentions
+public static class NotesExtensions
 {
     public static IServiceCollection AddNotesServices(this IServiceCollection services)
     {

@@ -7,7 +7,7 @@ using MU.CV.DAL.Entities.Note;
 
 namespace MU.CV.BLL.Extensions;
 
-public static class CVServiceServicesCollectionExtentions
+public static class CVServiceServicesCollectionExtensions
 {
     public static IServiceCollection AddCVServices(this IServiceCollection services)
     {

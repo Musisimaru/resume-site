@@ -37,7 +37,7 @@ public class JobExperienceAuthorizedReadService(IProjectorRepository<JobExperien
             dal.IsIT,
             dal.IsFreelance)));
 
-public static class JobExperienceExtentions
+public static class JobExperienceExtensions
 {
     public static IServiceCollection AddJobExperienceServices(this IServiceCollection services)
     {

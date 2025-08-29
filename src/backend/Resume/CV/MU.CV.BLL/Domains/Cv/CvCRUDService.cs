@@ -30,7 +30,7 @@ public class CvAuthorizedReadService(IProjectorRepository<CvDAL> repo, ICurrentU
     }
 }
 
-public static class CvExtentions
+public static class CvExtensions
 {
     public static IServiceCollection AddCvServices(this IServiceCollection services)
     {
