@@ -14,6 +14,8 @@ public class CvEntityTypeConfiguration : IEntityTypeConfiguration<CvDAL>
         builder.Property(e => e.OwnerFullName).IsRequired().HasMaxLength(256);
         builder.Property(e => e.Title).IsRequired().HasMaxLength(256);
         builder.Property(e => e.About).IsRequired(false);
+        builder.Property(e => e.UniquePath).IsRequired().HasMaxLength(256);
+        builder.HasIndex(e => e.UniquePath).IsUnique();
 
         builder.HasMany(e => e.JobExperiences)
             .WithOne(e => e.Cv)

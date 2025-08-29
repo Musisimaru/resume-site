@@ -6,4 +6,5 @@ public interface ICv
     string OwnerFullName { get; set; }
     string Title { get; set; }
     string About { get; set; }
+    string UniquePath { get; set; }
 }

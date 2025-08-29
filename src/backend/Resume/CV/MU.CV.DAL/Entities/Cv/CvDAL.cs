@@ -9,6 +9,7 @@ public class CvDAL : BaseHistorianEntity, ICv
     public string OwnerFullName { get; set; }
     public string Title { get; set; }
     public string About { get; set; }
+    public string UniquePath { get; set; }
 
     public List<JobExperienceDAL> JobExperiences { get; set; } = new();
 }

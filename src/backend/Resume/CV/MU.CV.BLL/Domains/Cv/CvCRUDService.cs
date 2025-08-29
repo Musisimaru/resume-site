@@ -16,10 +16,19 @@ public class CvAuthorizedWriteService(IHistorianRepository<CvDAL> repo, IUnitOfW
             stored.OwnerFullName = edited.OwnerFullName;
             stored.Title = edited.Title;
             stored.About = edited.About;
+            stored.UniquePath = edited.UniquePath;
         });
 
 public class CvAuthorizedReadService(IProjectorRepository<CvDAL> repo, ICurrentUser user)
-    : BaseAuthorizedRead<CvDAL, CvDto>(repo, user, (dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About)));
+    : BaseAuthorizedRead<CvDAL, CvDto>(repo, user, (dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath)))
+{
+    public async Task<CvDto?> GetByUniquePathAsync(string uniquePath, CancellationToken ct = default)
+    {
+        var spec = new ByUserSpec() { Criteria = it => it.UniquePath == uniquePath };
+        var items = await repo.GetAllAsync(dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath), ct, spec);
+        return items.FirstOrDefault();
+    }
+}
 
 public static class CvExtentions
 {
@@ -32,9 +41,9 @@ public static class CvExtentions
     }
 }
 
-public record CvDto(Guid Id, Guid OwnerId, string OwnerFullName, string Title, string About) : ValueBaseDtoEntity<CvDAL>(Id)
+public record CvDto(Guid Id, Guid OwnerId, string OwnerFullName, string Title, string About, string UniquePath) : ValueBaseDtoEntity<CvDAL>(Id)
 {
-    public CvDto() : this(Guid.Empty, Guid.Empty, string.Empty, string.Empty, string.Empty) { }
+    public CvDto() : this(Guid.Empty, Guid.Empty, string.Empty, string.Empty, string.Empty, string.Empty) { }
 
     public override CvDAL ToDbEntity()
     {
@@ -44,7 +53,8 @@ public record CvDto(Guid Id, Guid OwnerId, string OwnerFullName, string Title, s
             OwnerId = OwnerId,
             OwnerFullName = OwnerFullName,
             Title = Title,
-            About = About
+            About = About,
+            UniquePath = UniquePath
         };
     }
 }
