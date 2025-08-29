@@ -26,7 +26,6 @@ public static class MapNotesApi
     private async static Task<Results<Ok<NoteDto>, NotFound>> GetNoteByUserAsync(Guid noteId,
         [FromServices] IDtoRead<NoteDto> readService)
     {
-        // TODO: add filters by user
         var note = (await readService.GetByIdAsync(noteId));
         return TypedResults.Ok(note);
     }
@@ -35,8 +34,6 @@ public static class MapNotesApi
         [FromServices] IDtoRead<NoteDto> readService, 
         [FromServices] ICurrentUser user)
     {
-        // TODO: add filters by user
-        
         var notes = (await readService.GetAllAsync());
         return TypedResults.Ok(notes);
     }

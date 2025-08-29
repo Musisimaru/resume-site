@@ -175,6 +175,7 @@ public class Program
         var cvApi = app.NewVersionedApi();
         cvApi.MapNotesApiV1();
         cvApi.MapSelfIdentityApiV1();
+        cvApi.MapCvApiV1();
 
         app.Run();
     }
