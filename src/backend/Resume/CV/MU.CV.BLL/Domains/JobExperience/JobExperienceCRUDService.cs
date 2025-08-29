@@ -1,48 +1,34 @@
 using Microsoft.Extensions.DependencyInjection;
 using MU.CV.BLL.Common;
 using MU.CV.BLL.Common.Models;
-using MU.CV.BLL.Common.User;
 using MU.CV.DAL.Common;
 using MU.CV.DAL.Entities.JobExperience;
 using MU.CV.DAL.Utils;
 
 namespace MU.CV.BLL.Domains.JobExperience;
 
-public class JobExperienceAuthorizedWriteService(IHistorianRepository<JobExperienceDAL> repo, IUnitOfWork uow, ICurrentUser user)
-    : BaseAuthorizedWrite<JobExperienceDAL, JobExperienceDto>(repo, uow, user,
-        (stored, edited) =>
-        {
-            stored.CvId = edited.CvId;
-            stored.PositionDescription = edited.PositionDescription;
-            stored.LengthOfWorkFrom = edited.LengthOfWorkFrom;
-            stored.LengthOfWorkTo = edited.LengthOfWorkTo;
-            stored.PositionTitle = edited.PositionTitle;
-            stored.JobCompanyName = edited.JobCompanyName;
-            stored.JobCompanyLogo = edited.JobCompanyLogo;
-            stored.IsIT = edited.IsIT;
-            stored.IsFreelance = edited.IsFreelance;
-        });
+public class JobExperienceWriteService(IBaseRepository<JobExperienceDAL> repo, IUnitOfWork uow)
+    : BaseDtoWrite<JobExperienceDAL, JobExperienceDto>(repo, uow);
 
-public class JobExperienceAuthorizedReadService(IProjectorRepository<JobExperienceDAL> repo, ICurrentUser user)
-    : BaseAuthorizedRead<JobExperienceDAL, JobExperienceDto>(repo, user, (dal =>
-        new JobExperienceDto(
-            dal.Id,
-            dal.CvId,
-            dal.PositionDescription,
-            dal.LengthOfWorkFrom,
-            dal.LengthOfWorkTo,
-            dal.PositionTitle,
-            dal.JobCompanyName,
-            dal.JobCompanyLogo,
-            dal.IsIT,
-            dal.IsFreelance)));
+public class JobExperienceReadService(IProjectorRepository<JobExperienceDAL> repo)
+    : BaseDtoRead<JobExperienceDAL, JobExperienceDto>(repo, dal => new JobExperienceDto(
+        dal.Id,
+        dal.CvId,
+        dal.PositionDescription,
+        dal.LengthOfWorkFrom,
+        dal.LengthOfWorkTo,
+        dal.PositionTitle,
+        dal.JobCompanyName,
+        dal.JobCompanyLogo,
+        dal.IsIT,
+        dal.IsFreelance));
 
 public static class JobExperienceExtensions
 {
     public static IServiceCollection AddJobExperienceServices(this IServiceCollection services)
     {
-        services.AddScoped<IDtoWrite<JobExperienceDto>, JobExperienceAuthorizedWriteService>();
-        services.AddScoped<IDtoRead<JobExperienceDto>, JobExperienceAuthorizedReadService>();
+        services.AddScoped<IDtoWrite<JobExperienceDto>, JobExperienceWriteService>();
+        services.AddScoped<IDtoRead<JobExperienceDto>, JobExperienceReadService>();
         
         return services;
     }

@@ -1,32 +1,33 @@
 using Microsoft.Extensions.DependencyInjection;
 using MU.CV.BLL.Common;
 using MU.CV.BLL.Common.Models;
-using MU.CV.BLL.Common.User;
 using MU.CV.DAL.Common;
 using MU.CV.DAL.Entities.Cv;
 using MU.CV.DAL.Utils;
 
 namespace MU.CV.BLL.Domains.Cv;
 
-public class CvAuthorizedWriteService(IHistorianRepository<CvDAL> repo, IUnitOfWork uow, ICurrentUser user)
-    : BaseAuthorizedWrite<CvDAL, CvDto>(repo, uow, user,
-        (stored, edited) =>
-        {
-            stored.OwnerId = edited.OwnerId;
-            stored.OwnerFullName = edited.OwnerFullName;
-            stored.Title = edited.Title;
-            stored.About = edited.About;
-            stored.UniquePath = edited.UniquePath;
-        });
+public class CvWriteService(IBaseRepository<CvDAL> repo, IUnitOfWork uow)
+    : BaseDtoWrite<CvDAL, CvDto>(repo, uow);
 
-public class CvAuthorizedReadService(IProjectorRepository<CvDAL> repo, ICurrentUser user)
-    : BaseAuthorizedRead<CvDAL, CvDto>(repo, user, (dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath))), ICvReadByPath
+public class CvReadService(IProjectorRepository<CvDAL> repo)
+    : BaseDtoRead<CvDAL, CvDto>(repo, dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath)), ICvReadByPath
 {
     public async Task<CvDto?> GetByUniquePathAsync(string uniquePath, CancellationToken ct = default)
     {
-        var spec = new ByUserSpec() { Criteria = it => it.UniquePath == uniquePath };
+        var spec = new PublicSpec() { Criteria = it => it.UniquePath == uniquePath };
         var items = await repo.GetAllAsync(dal => new CvDto(dal.Id, dal.OwnerId, dal.OwnerFullName, dal.Title, dal.About, dal.UniquePath), ct, spec);
         return items.FirstOrDefault();
+    }
+
+    private class PublicSpec : ISpecification<CvDAL>
+    {
+        public System.Linq.Expressions.Expression<Func<CvDAL, bool>>? Criteria { get; init; }
+        public List<System.Linq.Expressions.Expression<Func<CvDAL, object>>> Includes { get; } = [];
+        public System.Linq.Expressions.Expression<Func<CvDAL, object>>? OrderBy => it => it.Id;
+        public System.Linq.Expressions.Expression<Func<CvDAL, object>>? OrderByDesc => null;
+        public int? Skip { get; }
+        public int? Take { get; }
     }
 }
 
@@ -34,9 +35,9 @@ public static class CvExtensions
 {
     public static IServiceCollection AddCvServices(this IServiceCollection services)
     {
-        services.AddScoped<IDtoWrite<CvDto>, CvAuthorizedWriteService>();
-        services.AddScoped<IDtoRead<CvDto>, CvAuthorizedReadService>();
-        services.AddScoped<ICvReadByPath, CvPublicReadService>();
+        services.AddScoped<IDtoWrite<CvDto>, CvWriteService>();
+        services.AddScoped<IDtoRead<CvDto>, CvReadService>();
+        services.AddScoped<ICvReadByPath, CvReadService>();
         
         return services;
     }

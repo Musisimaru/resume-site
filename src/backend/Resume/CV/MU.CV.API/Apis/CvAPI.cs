@@ -12,15 +12,15 @@ public static class CvAPI
     {
         var api = app.MapGroup("api/cv").RequireAuthorization().HasApiVersion(1.0);
 
-        api.MapGet("/", GetCVs);
-        api.MapGet("/{cvId:guid}", GetCV);
+        app.MapGet("/api/cv", GetCVs).AllowAnonymous().HasApiVersion(1.0);
+        app.MapGet("/api/cv/{cvId:guid}", GetCV).AllowAnonymous().HasApiVersion(1.0);
         api.MapPost("/", CreateCV);
         api.MapPut("/", UpdateCV);
         api.MapDelete("/{cvId:guid}", RemoveCV);
         app.MapGet("/api/cv/decipher/{cvPath}", DecipherPath).AllowAnonymous().HasApiVersion(1.0);
         
-        api.MapGet("/{cvId:guid}/blocks", GetJobExperiences);
-        api.MapGet("/{cvId:guid}/blocks/{blockId:guid}", GetJobExperience);
+        app.MapGet("/api/cv/{cvId:guid}/blocks", GetJobExperiences).AllowAnonymous().HasApiVersion(1.0);
+        app.MapGet("/api/cv/{cvId:guid}/blocks/{blockId:guid}", GetJobExperience).AllowAnonymous().HasApiVersion(1.0);
         api.MapPost("/{cvId:guid}/blocks/{blockId:guid}", CreateJobExperience);
         api.MapPut("/{cvId:guid}/blocks/{blockId:guid}", UpdateJobExperience);
         api.MapDelete("/{cvId:guid}/blocks/{blockId:guid}", RemoveJobExperience);
@@ -62,7 +62,7 @@ public static class CvAPI
     private static async Task<Results<Ok<CvDto>, NotFound>> GetCV(Guid cvId, [FromServices] IDtoRead<CvDto> readService)
     {
         var cv = await readService.GetByIdAsync(cvId);
-        return TypedResults.Ok(cv);
+        return cv is null ? TypedResults.NotFound() : TypedResults.Ok(cv);
     }
 
     private static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> RemoveJobExperience(Guid cvId, Guid blockId, [FromServices] IDtoWrite<JobExperienceDto> writeService)
@@ -88,12 +88,12 @@ public static class CvAPI
     private static async Task<Results<Ok<JobExperienceDto>, NotFound>> GetJobExperience(Guid cvId, Guid blockId, [FromServices] IDtoRead<JobExperienceDto> readService)
     {
         var block = await readService.GetByIdAsync(blockId);
-        return TypedResults.Ok(block);
+        return block is null ? TypedResults.NotFound() : TypedResults.Ok(block);
     }
 
     private static async Task<Ok<IEnumerable<JobExperienceDto>>> GetJobExperiences(Guid cvId, [FromServices] IDtoRead<JobExperienceDto> readService)
     {
         var blocks = await readService.GetAllAsync();
-        return TypedResults.Ok(blocks.Where(x => x.CvId == cvId));
+        return TypedResults.Ok(blocks.Where(b => b.CvId == cvId));
     }
 }
